@@ -34,7 +34,7 @@ function calculateDowry() {
     if (document.getElementById('gossip_parents').checked) reputationModifier *= 0.85;
     if (document.getElementById('gossip_self').checked) reputationModifier *= 0.9;
     if (document.getElementById('general_gossip').checked) basePrice -= 20;
-    let finalPrice = basePrice * education * networth * age + caste + skillPrice;
+    let finalPrice = ((((basePrice * education) * networth) +caste) + skillPrice) * age;
     finalPrice *= reputationModifier;
     document.getElementById('dowry-result').textContent = `$${finalPrice.toFixed(2)}`;
 }
