@@ -1,40 +1,42 @@
-document.getElementById('calculate-btn').addEventListener('click', calculateDowry); 
-
-function calculateDowry() {
-    let basePrice = 100;
-    const educationSelect = document.getElementById('education');
-    const education = parseFloat(educationSelect.value);
-    if (isNaN(education)) {
-        alert('Please select an education level.');
-        return;
+document.getElementById('calculate-btn').addEventListener('click', () => {
+    const name = document.getElementById("name").value;
+    let price = Number(document.getElementById("startingbid").value);
+    const education = Number(document.getElementById("education").value);
+    const netWorth = Number(document.getElementById("networth").value);
+    const caste = Number(document.getElementById("caste").value);
+    const skills = document.getElementsByClassName("skills");
+    const ageRadios = document.getElementsByName("age");
+    const reputation = document.getElementsByClassName("reputation");
+    const loveLetter = document.getElementById("loveletter").value;
+    if (!name || !price) {
+      alert("Enter a name and starting bid.");
+      return;
     }
-    const networthSelect = document.getElementById('networth');
-    const networth = parseFloat(networthSelect.value);
-    if (isNaN(networth)) {
-        alert('Please select a family net worth.');
-        return;
+    price += caste;
+    const skillPrice = Array.from(skills)
+      .filter(skill => skill.checked)
+      .reduce((total, skill) => total + Number(skill.value), 0);
+    price += skillPrice;
+    price *= education;
+    price *= netWorth;
+    ageRadios.forEach(age => {
+      if (age.checked) {
+        price *= parseFloat(age.value);
+      }
+    });
+    for (let i = 0; i < reputation.length; i++) {
+      if (reputation[i].checked) {
+        if (Number(reputation[i].value) < 0) {
+          price += Number(reputation[i].value);
+        } else {
+          price *= parseFloat(reputation[i].value);
+        }
+      }
     }
-    const casteSelect = document.getElementById('caste');
-    const caste = parseInt(casteSelect.value);
-    if (isNaN(caste)) {
-        alert('Please select a caste.');
-        return;
-    }
-    let skillPrice = 0;
-    if (document.getElementById('music').checked) skillPrice += 10;
-    if (document.getElementById('cook').checked) skillPrice += 20;
-    if (document.getElementById('easygoing').checked) skillPrice += 15;
-    if (document.getElementById('sing').checked) skillPrice += 10;
-    const age = parseFloat(document.querySelector('input[name="age"]:checked').value);
-    if (isNaN(age)) {
-        alert('Please select an age range.');
-        return;
-    }
-    let reputationModifier = 1;
-    if (document.getElementById('gossip_parents').checked) reputationModifier *= 0.85;
-    if (document.getElementById('gossip_self').checked) reputationModifier *= 0.9;
-    if (document.getElementById('general_gossip').checked) basePrice -= 20;
-    let finalPrice = ((((basePrice * education) * networth) +caste) + skillPrice) * age;
-    finalPrice *= reputationModifier;
-    document.getElementById('dowry-result').textContent = `$${finalPrice.toFixed(2)}`;
-}
+    const person = {
+      name,
+      price,
+      loveLetter
+    };
+    document.getElementById("result").innerHTML = `The price for ${person.name} is ${person.price.toFixed(2)}$. Here is your love letter: "${person.loveLetter}"`;
+  });
